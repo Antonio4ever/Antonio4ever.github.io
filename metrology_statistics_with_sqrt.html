@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метрология и Статистика</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .formula {
+            margin: 20px 0;
+            background-color: #e6e6e6;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-family: monospace;
+        }
+    </style>
+    <script>
+
+        function calculate() {
+            const pValues = [];
+            let sumP = 0;
+            let countP = 0;
+
+            for (let i = 1; i <= 5; i++) {
+                const pValue = parseFloat(document.getElementById('p' + i).value);
+                if (!isNaN(pValue)) {
+                    pValues.push(pValue);
+                    sumP += pValue;
+                    countP++;
+                }
+            }
+
+            if (countP === 0) return;
+
+            const meanP = sumP / countP;
+            document.getElementById('meanP').innerText = meanP.toFixed(4);
+
+            let sumS = 0;
+            pValues.forEach((p, index) => {
+                const difference = meanP - p;
+                const squaredDifference = Math.pow(Math.pow(difference, 2),2);
+                document.getElementById('mean_' + (index + 1)).innerText = difference.toFixed(4);
+                document.getElementById('square_' + (index + 1)).innerText = squaredDifference.toExponential(4);
+                sumS += squaredDifference;
+            });
+
+            const sX = Math.sqrt(Math.sqrt(sumS / (countP * (countP - 1))));
+            document.getElementById('sX').innerText = sX.toExponential(4);
+
+            const tpn = parseFloat(document.getElementById('tpn').value) || 0;
+            const eX = sX * tpn;
+            document.getElementById('eX').innerText = eX.toExponential(4);
+        }
+    </script>
+</head>
+<body>
+    <h1>Метрология</h1>
+    <p>Метрология — это наука о измерениях, их единстве и обеспечении точности...</p>
+
+    <h1>Формулы</h1>
+    <div class="formula">
+        <p><b>Формула для S(x):</b></p>
+        <p>S(x) = √[((p̄ - p₁)² + (p̄ - p₂)² + ... + (p̄ - pₙ)²) / (n * (n - 1))]</p>
+    </div>
+    <div class="formula">
+        <p><b>Формула для E(x):</b></p>
+        <p>E(x) = S(x) × tpn</p>
+    </div>
+
+    <h1>Таблица расчетов</h1>
+    <p>Введите значения для расчета:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Плотность (p)</th>
+                <th>Среднее арифметическое (p̄)</th>
+                <th>Среднее значение</th>
+                <th>В квадрате</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="number" id="p1" oninput="calculate()"></td>
+                <td rowspan="5" id="meanP">-</td>
+                <td id="mean_1">-</td>
+                <td id="square_1">-</td>
+            </tr>
+            <tr>
+                <td><input type="number" id="p2" oninput="calculate()"></td>
+                <td id="mean_2">-</td>
+                <td id="square_2">-</td>
+            </tr>
+            <tr>
+                <td><input type="number" id="p3" oninput="calculate()"></td>
+                <td id="mean_3">-</td>
+                <td id="square_3">-</td>
+            </tr>
+            <tr>
+                <td><input type="number" id="p4" oninput="calculate()"></td>
+                <td id="mean_4">-</td>
+                <td id="square_4">-</td>
+            </tr>
+            <tr>
+                <td><input type="number" id="p5" oninput="calculate()"></td>
+                <td id="mean_5">-</td>
+                <td id="square_5">-</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Рассчеты для S(x) и E(x)</h2>
+    <p><b>S(x):</b> <span id="sX">-</span></p>
+    <p>Введите значение <code>tpn</code> для расчета E(x):</p>
+    <input type="number" id="tpn" oninput="calculate()" placeholder="Введите значение tpn">
+    <p><b>E(x):</b> <span id="eX">-</span></p>
+</body>
+</html>
